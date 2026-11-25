@@ -1,0 +1,2558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Deduction Academy: Modal Verbs Mission</title>
+<link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    /* ============================================================
+       DESIGN TOKENS & THEME VARIABLES
+       Dark tactical spy-terminal palette with emerald/cyan accents
+    ============================================================ */
+    :root {
+      --bg-deep: #060b11;
+      --bg-panel: #0d1622;
+      --bg-card: #121e2e;
+      --bg-elevated: #17263a;
+      --bg-input: #09111b;
+
+      --border-subtle: rgba(56, 189, 248, 0.16);
+      --border-emerald: rgba(16, 185, 129, 0.35);
+      --border-cyan: rgba(6, 182, 212, 0.35);
+
+      --text-primary: #eef6ff;
+      --text-secondary: #9bb3cb;
+      --text-muted: #647d96;
+
+      --emerald: #10b981;
+      --emerald-bright: #34d399;
+      --emerald-bg: rgba(16, 185, 129, 0.12);
+
+      --cyan: #06b6d4;
+      --cyan-bright: #22d3ee;
+      --cyan-bg: rgba(6, 182, 212, 0.12);
+
+      --amber: #f59e0b;
+      --amber-bg: rgba(245, 158, 11, 0.12);
+
+      --rose: #f43f5e;
+      --rose-bright: #fb7185;
+      --rose-bg: rgba(244, 63, 94, 0.12);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    /* ============================================================
+       RESET & BASE STYLES
+    ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-deep);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(16, 185, 129, 0.09), transparent 38%),
+        radial-gradient(circle at 85% 15%, rgba(6, 182, 212, 0.09), transparent 40%),
+        linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    }
+
+    /* Subtle tactical scanline overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0, 0, 0, 0.08) 4px
+      );
+      z-index: 999;
+      opacity: 0.35;
+    }
+
+    /* ============================================================
+       LAYOUT CONTAINER
+    ============================================================ */
+    .app-shell {
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 18px 16px 64px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ============================================================
+       TOP TACTICAL HEADER
+    ============================================================ */
+    .hud-header {
+      background: linear-gradient(145deg, rgba(13, 22, 34, 0.96), rgba(18, 30, 46, 0.92));
+      border: 1px solid var(--border-emerald);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-card), 0 0 24px rgba(16, 185, 129, 0.07);
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hud-header::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--emerald), var(--cyan), transparent);
+    }
+
+    .hud-top-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(6, 182, 212, 0.22));
+      border: 1px solid var(--border-emerald);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--emerald-bright);
+      box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .brand-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cyan-bright);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--emerald-bright);
+      box-shadow: 0 0 8px var(--emerald-bright);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+
+    .brand-title {
+      font-size: clamp(1.2rem, 2.8vw, 1.65rem);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sound-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      min-height: 42px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-cyan);
+      color: var(--cyan-bright);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sound-toggle:hover {
+      background: rgba(6, 182, 212, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .sound-toggle.muted {
+      border-color: rgba(148, 163, 184, 0.25);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.6);
+    }
+
+    /* Progress Bar Row */
+    .progress-section {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+
+    .progress-label {
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .progress-score {
+      color: var(--emerald-bright);
+      font-weight: 700;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: var(--bg-input);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--emerald), var(--cyan-bright));
+      border-radius: 999px;
+      transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+    }
+
+    /* ============================================================
+       MISSION NAVIGATION TABS
+    ============================================================ */
+    .mission-nav {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 780px) {
+      .mission-nav {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .mission-nav .nav-tab:last-child {
+        grid-column: span 2;
+      }
+    }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 3px;
+      padding: 12px 14px;
+      min-height: 62px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      position: relative;
+    }
+
+    .nav-tab:hover {
+      border-color: var(--border-cyan);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    .nav-tab.active {
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.16), rgba(6, 182, 212, 0.12));
+      border-color: var(--emerald);
+      color: var(--text-primary);
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.16);
+    }
+
+    .nav-tab-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cyan-bright);
+    }
+
+    .nav-tab.active .nav-tab-top {
+      color: var(--emerald-bright);
+    }
+
+    .nav-tab-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
+
+    .tab-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.14);
+      color: var(--text-secondary);
+    }
+
+    .tab-badge.complete {
+      background: rgba(16, 185, 129, 0.22);
+      color: var(--emerald-bright);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+    }
+
+    /* ============================================================
+       MISSION PANEL CONTAINER
+    ============================================================ */
+    .mission-panel {
+      display: none;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      animation: fadeSlide 0.28s ease;
+    }
+
+    .mission-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .mission-panel {
+        padding: 18px 14px;
+      }
+    }
+
+    .mission-header {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .mission-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--emerald-bright);
+      background: var(--emerald-bg);
+      border: 1px solid var(--border-emerald);
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    .mission-title {
+      font-size: clamp(1.2rem, 2.4vw, 1.5rem);
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .mission-instruction {
+      color: var(--text-secondary);
+      font-size: 0.96rem;
+    }
+
+    /* ============================================================
+       BUTTONS & ACTION BAR
+    ============================================================ */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      min-height: 46px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 0.94rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--emerald), #059669);
+      color: #03150e;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(16, 185, 129, 0.42);
+    }
+
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border-color: var(--border-subtle);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--cyan);
+      color: var(--cyan-bright);
+      transform: translateY(-1px);
+    }
+
+    .btn-subtle {
+      background: transparent;
+      color: var(--text-secondary);
+      border-color: rgba(148, 163, 184, 0.25);
+    }
+
+    .btn-subtle:hover {
+      background: rgba(148, 163, 184, 0.1);
+      color: var(--text-primary);
+    }
+
+    .result-banner {
+      margin-top: 16px;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      animation: fadeSlide 0.25s ease;
+    }
+
+    .result-banner.show {
+      display: flex;
+    }
+
+    .result-banner.perfect {
+      background: var(--emerald-bg);
+      border: 1px solid var(--emerald);
+      color: var(--emerald-bright);
+    }
+
+    .result-banner.partial {
+      background: var(--cyan-bg);
+      border: 1px solid var(--cyan);
+      color: var(--cyan-bright);
+    }
+
+    .result-banner.low {
+      background: var(--rose-bg);
+      border: 1px solid var(--rose);
+      color: var(--rose-bright);
+    }
+
+    /* ============================================================
+       SHARED ITEM CARD & FEEDBACK STYLES
+    ============================================================ */
+    .exercise-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      transition: border-color 0.25s ease, background-color 0.25s ease;
+    }
+
+    .item-card.is-correct {
+      border-color: var(--emerald);
+      background: linear-gradient(145deg, var(--bg-card), rgba(16, 185, 129, 0.08));
+    }
+
+    .item-card.is-wrong {
+      border-color: var(--rose);
+      background: linear-gradient(145deg, var(--bg-card), rgba(244, 63, 94, 0.08));
+    }
+
+    .item-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-cyan);
+      color: var(--cyan-bright);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .item-feedback {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      display: none;
+    }
+
+    .item-feedback.show {
+      display: block;
+      animation: fadeSlide 0.2s ease;
+    }
+
+    .item-feedback.correct {
+      background: rgba(16, 185, 129, 0.14);
+      border-left: 3px solid var(--emerald);
+      color: #a7f3d0;
+    }
+
+    .item-feedback.wrong {
+      background: rgba(244, 63, 94, 0.14);
+      border-left: 3px solid var(--rose);
+      color: #fecdd3;
+    }
+
+    .hint-pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: var(--amber-bg);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .verb-cue {
+      font-family: var(--font-mono);
+      color: var(--cyan-bright);
+      font-weight: 700;
+    }
+
+    /* Inline Text Inputs */
+    .inline-input {
+      background: var(--bg-input);
+      border: 1.5px solid rgba(56, 189, 248, 0.35);
+      border-radius: 7px;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.94rem;
+      padding: 6px 11px;
+      width: 190px;
+      max-width: 100%;
+      margin: 2px 4px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .inline-input.short {
+      width: 125px;
+    }
+
+    .inline-input:focus {
+      border-color: var(--emerald-bright);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .inline-input.correct {
+      border-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.14);
+      color: var(--emerald-bright);
+    }
+
+    .inline-input.wrong {
+      border-color: var(--rose);
+      background: rgba(244, 63, 94, 0.14);
+      color: var(--rose-bright);
+    }
+
+    /* ============================================================
+       EXERCISE 2: GRAMMAR BRIEFING & RADIO TRANSCRIPT
+    ============================================================ */
+    .briefing-card {
+      background: linear-gradient(145deg, rgba(6, 182, 212, 0.09), rgba(13, 22, 34, 0.95));
+      border: 1px solid var(--border-cyan);
+      border-radius: var(--radius-md);
+      margin-bottom: 22px;
+      overflow: hidden;
+    }
+
+    .briefing-toggle {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--cyan-bright);
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .briefing-toggle:hover {
+      background: rgba(6, 182, 212, 0.08);
+    }
+
+    .briefing-body {
+      padding: 0 18px 18px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .briefing-body.collapsed {
+      display: none;
+    }
+
+    @media (max-width: 680px) {
+      .briefing-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .grammar-rule {
+      background: var(--bg-card);
+      border: 1px solid rgba(56, 189, 248, 0.18);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+
+    .grammar-rule-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+
+    .modal-chip {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--emerald-bright);
+    }
+
+    .certainty-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald-bright);
+    }
+
+    .certainty-badge.zero {
+      background: var(--rose-bg);
+      color: var(--rose-bright);
+    }
+
+    .certainty-badge.fifty {
+      background: var(--amber-bg);
+      color: #fcd34d;
+    }
+
+    .certainty-badge.expect {
+      background: var(--cyan-bg);
+      color: var(--cyan-bright);
+    }
+
+    .grammar-rule p {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .grammar-example {
+      font-size: 0.84rem;
+      color: var(--text-primary);
+      font-style: italic;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 6px 9px;
+      border-radius: 6px;
+      border-left: 2px solid var(--cyan);
+    }
+
+    /* Radio Dialogue Bubbles */
+    .radio-log {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .radio-msg {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+    }
+
+    .radio-msg.fox {
+      border-left: 3px solid var(--emerald);
+    }
+
+    .radio-msg.byte {
+      border-left: 3px solid var(--cyan);
+    }
+
+    .agent-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .radio-msg.fox .agent-avatar {
+      background: var(--emerald-bg);
+      color: var(--emerald-bright);
+      border: 1px solid var(--border-emerald);
+    }
+
+    .radio-msg.byte .agent-avatar {
+      background: var(--cyan-bg);
+      color: var(--cyan-bright);
+      border: 1px solid var(--border-cyan);
+    }
+
+    .radio-content {
+      flex: 1;
+      font-size: 0.98rem;
+      line-height: 1.8;
+    }
+
+    .agent-name {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .radio-msg.fox .agent-name { color: var(--emerald-bright); }
+    .radio-msg.byte .agent-name { color: var(--cyan-bright); }
+
+    .inline-select {
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border: 1.5px solid rgba(56, 189, 248, 0.4);
+      border-radius: 7px;
+      padding: 5px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 2px 4px;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .inline-select:focus {
+      border-color: var(--emerald-bright);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .inline-select.correct {
+      border-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.18);
+      color: var(--emerald-bright);
+    }
+
+    .inline-select.wrong {
+      border-color: var(--rose);
+      background: rgba(244, 63, 94, 0.18);
+      color: var(--rose-bright);
+    }
+
+    .gap-feedback-list {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 680px) {
+      .gap-feedback-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mini-fb {
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      background: var(--bg-card);
+      border-left: 3px solid var(--border-subtle);
+    }
+
+    .mini-fb.correct {
+      border-left-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.1);
+      color: #a7f3d0;
+    }
+
+    .mini-fb.wrong {
+      border-left-color: var(--rose);
+      background: rgba(244, 63, 94, 0.1);
+      color: #fecdd3;
+    }
+
+    /* ============================================================
+       EXERCISE 3: TRUE / FALSE LOGIC CHECK
+    ============================================================ */
+    .tf-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tf-sentence {
+      flex: 1;
+      min-width: 240px;
+      font-size: 0.98rem;
+    }
+
+    .tf-controls {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .tf-btn {
+      padding: 9px 18px;
+      min-height: 42px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid rgba(148, 163, 184, 0.28);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tf-btn:hover {
+      border-color: var(--cyan);
+      color: var(--text-primary);
+    }
+
+    .tf-btn.selected-true {
+      background: rgba(16, 185, 129, 0.22);
+      border-color: var(--emerald);
+      color: var(--emerald-bright);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.22);
+    }
+
+    .tf-btn.selected-false {
+      background: rgba(244, 63, 94, 0.22);
+      border-color: var(--rose);
+      color: var(--rose-bright);
+      box-shadow: 0 0 12px rgba(244, 63, 94, 0.22);
+    }
+
+    /* ============================================================
+       EXERCISE 4: MINI-MYSTERY DOSSIERS
+    ============================================================ */
+    .clues-box {
+      background: linear-gradient(145deg, rgba(245, 158, 11, 0.1), rgba(18, 30, 46, 0.9));
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      margin-bottom: 18px;
+    }
+
+    .clues-title {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #fcd34d;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .clues-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.94rem;
+    }
+
+    .dossiers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    @media (max-width: 760px) {
+      .dossiers-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dossier-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-cyan);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dossier-card::before {
+      content: "CLASSIFIED";
+      position: absolute;
+      top: 10px;
+      right: -24px;
+      transform: rotate(32deg);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      background: rgba(244, 63, 94, 0.2);
+      color: var(--rose-bright);
+      padding: 2px 26px;
+      border-top: 1px solid rgba(244, 63, 94, 0.35);
+      border-bottom: 1px solid rgba(244, 63, 94, 0.35);
+    }
+
+    .dossier-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .dossier-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-emerald);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--emerald-bright);
+      flex-shrink: 0;
+    }
+
+    .dossier-name {
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .dossier-role {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--cyan-bright);
+    }
+
+    .dossier-stats {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+    }
+
+    .dossier-stats strong {
+      color: var(--text-primary);
+    }
+
+    .report-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-emerald);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      line-height: 2;
+      font-size: 0.98rem;
+    }
+
+    .report-header {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--emerald-bright);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* ============================================================
+       EXERCISE 5: CODE RED ERROR CORRECTION (CLICKABLE WORDS)
+    ============================================================ */
+    .word-sentence {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px 4px;
+      line-height: 1.7;
+      margin-top: 6px;
+    }
+
+    .word-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid transparent;
+      color: var(--text-primary);
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .word-pill:hover {
+      background: rgba(6, 182, 212, 0.16);
+      border-color: rgba(6, 182, 212, 0.45);
+      color: var(--cyan-bright);
+    }
+
+    .word-pill.crossed-out {
+      background: rgba(244, 63, 94, 0.2);
+      border-color: var(--rose);
+      color: var(--rose-bright);
+      text-decoration: line-through;
+      text-decoration-thickness: 2.5px;
+      text-decoration-color: var(--rose-bright);
+      font-weight: 700;
+    }
+
+    .punct-token {
+      color: var(--text-secondary);
+      font-size: 0.98rem;
+      margin-right: 2px;
+      user-select: none;
+    }
+
+    .correction-drawer {
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: rgba(9, 17, 27, 0.78);
+      border: 1px dashed rgba(56, 189, 248, 0.35);
+      border-radius: var(--radius-sm);
+      display: none;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      animation: fadeSlide 0.2s ease;
+    }
+
+    .correction-drawer.show {
+      display: flex;
+    }
+
+    .correction-label {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+    }
+
+    .crossed-preview {
+      font-family: var(--font-mono);
+      color: var(--rose-bright);
+      text-decoration: line-through;
+      font-weight: 700;
+    }
+
+    .corrected-full {
+      margin-top: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      color: var(--emerald-bright);
+    }
+
+    /* Footer */
+    .app-footer {
+      text-align: center;
+      margin-top: 28px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- ============================================================
+         TOP HUD HEADER & OVERALL MISSION PROGRESS
+    ============================================================ -->
+    <header class="hud-header">
+      <div class="hud-top-row">
+        <div class="brand-group">
+          <div class="brand-badge" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <circle cx="12" cy="11" r="3"></circle>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-eyebrow">
+              <span class="status-dot"></span>
+              <span>SECURE TERMINAL // LEVEL B1-B2</span>
+            </div>
+            <h1 class="brand-title">Agent Deduction Academy: Modal Verbs Mission</h1>
+          </div>
+        </div>
+
+        <div class="hud-controls">
+          <button id="soundToggleBtn" class="sound-toggle" type="button" aria-pressed="true">
+            <span id="soundIcon">🔊</span>
+            <span id="soundLabel">SOUND: ON</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-meta">
+          <span class="progress-label">Overall Mission Progress</span>
+          <span id="overallScoreText" class="progress-score">0 / 33 POINTS (0%)</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="33" aria-valuenow="0" id="overallProgressBar">
+          <div class="progress-fill" id="overallProgressFill"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         MISSION NAVIGATION TABS (MISSIONS 1 - 5)
+    ============================================================ -->
+    <nav class="mission-nav" aria-label="Mission Navigation">
+      <button class="nav-tab active" data-mission="1" type="button">
+        <div class="nav-tab-top">
+          <span>Mission 1</span>
+          <span class="tab-badge" id="badge-1">0/7</span>
+        </div>
+        <span class="nav-tab-name">Evidence &amp; Logic</span>
+      </button>
+
+      <button class="nav-tab" data-mission="2" type="button">
+        <div class="nav-tab-top">
+          <span>Mission 2</span>
+          <span class="tab-badge" id="badge-2">0/8</span>
+        </div>
+        <span class="nav-tab-name">Live Radio</span>
+      </button>
+
+      <button class="nav-tab" data-mission="3" type="button">
+        <div class="nav-tab-top">
+          <span>Mission 3</span>
+          <span class="tab-badge" id="badge-3">0/6</span>
+        </div>
+        <span class="nav-tab-name">Logic Check</span>
+      </button>
+
+      <button class="nav-tab" data-mission="4" type="button">
+        <div class="nav-tab-top">
+          <span>Mission 4</span>
+          <span class="tab-badge" id="badge-4">0/5</span>
+        </div>
+        <span class="nav-tab-name">Stolen USB</span>
+      </button>
+
+      <button class="nav-tab" data-mission="5" type="button">
+        <div class="nav-tab-top">
+          <span>Mission 5</span>
+          <span class="tab-badge" id="badge-5">0/7</span>
+        </div>
+        <span class="nav-tab-name">Code Red</span>
+      </button>
+    </nav>
+
+    <!-- ============================================================
+         MISSION 1: EVIDENCE & LOGIC (DEDUCTION BUILDER)
+    ============================================================ -->
+    <section id="mission-1" class="mission-panel active" aria-labelledby="m1-title">
+      <div class="mission-header">
+        <span class="mission-tag">Mission 01 // Deduction Builder</span>
+        <h2 id="m1-title" class="mission-title">Exercise 1: Evidence &amp; Logic</h2>
+        <p class="mission-instruction">
+          Read the clues from the crime scene. Type the correct modal verb (<strong>must, can't, might, could,</strong> or <strong>should</strong>) + the verb in brackets.
+        </p>
+      </div>
+
+      <div id="ex1-container" class="exercise-list"></div>
+
+      <div class="action-bar">
+        <button class="btn btn-primary" type="button" onclick="checkEx1()">Check Answers</button>
+        <button class="btn btn-secondary" type="button" onclick="resetEx1()">Reset</button>
+        <button class="btn btn-subtle" type="button" onclick="showAnswersEx1()">Show Answers</button>
+      </div>
+      <div id="ex1-banner" class="result-banner" role="status"></div>
+    </section>
+
+    <!-- ============================================================
+         MISSION 2: LIVE RADIO TRANSMISSION + GRAMMAR BRIEFING
+    ============================================================ -->
+    <section id="mission-2" class="mission-panel" aria-labelledby="m2-title">
+      <div class="mission-header">
+        <span class="mission-tag">Mission 02 // Radio Intercept</span>
+        <h2 id="m2-title" class="mission-title">Exercise 2: Live Radio Transmission</h2>
+        <p class="mission-instruction">
+          Complete the radio conversation between field agent Fox and hacker Byte. Choose <strong>must, can't, might, could,</strong> or <strong>should</strong> for each gap.
+        </p>
+      </div>
+
+      <!-- Grammar Briefing Card (Exclusively on Exercise 2) -->
+      <div class="briefing-card">
+        <button id="briefingToggle" class="briefing-toggle" type="button" aria-expanded="true">
+          <span>📡 Grammar Briefing: Modals of Deduction</span>
+          <span id="briefingArrow">▲ Hide</span>
+        </button>
+        <div id="briefingBody" class="briefing-body">
+          <div class="grammar-rule">
+            <div class="grammar-rule-head">
+              <span class="modal-chip">must</span>
+              <span class="certainty-badge">99–100% sure it is true</span>
+            </div>
+            <p>Strong evidence shows something is true.</p>
+            <div class="grammar-example">The lights are on. Someone <strong>must</strong> be inside.</div>
+          </div>
+
+          <div class="grammar-rule">
+            <div class="grammar-rule-head">
+              <span class="modal-chip">can't</span>
+              <span class="certainty-badge zero">0% — impossible</span>
+            </div>
+            <p>Strong evidence shows something is NOT true. (Use <strong>can't</strong>, NOT <em>mustn't</em>!)</p>
+            <div class="grammar-example">The door is locked from outside. He <strong>can't</strong> be inside.</div>
+          </div>
+
+          <div class="grammar-rule">
+            <div class="grammar-rule-head">
+              <span class="modal-chip">might / could</span>
+              <span class="certainty-badge fifty">50% — possible</span>
+            </div>
+            <p>You are not sure; it is a guess.</p>
+            <div class="grammar-example">It <strong>might / could</strong> be a trap.</div>
+          </div>
+
+          <div class="grammar-rule">
+            <div class="grammar-rule-head">
+              <span class="modal-chip">should</span>
+              <span class="certainty-badge expect">Expectation</span>
+            </div>
+            <p>You expect something to happen normally or soon.</p>
+            <div class="grammar-example">The hack <strong>should</strong> take 10 seconds.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Radio Transcript -->
+      <div id="ex2-container" class="radio-log"></div>
+      <div id="ex2-feedback" class="gap-feedback-list"></div>
+
+      <div class="action-bar">
+        <button class="btn btn-primary" type="button" onclick="checkEx2()">Check Answers</button>
+        <button class="btn btn-secondary" type="button" onclick="resetEx2()">Reset</button>
+        <button class="btn btn-subtle" type="button" onclick="showAnswersEx2()">Show Answers</button>
+      </div>
+      <div id="ex2-banner" class="result-banner" role="status"></div>
+    </section>
+
+    <!-- ============================================================
+         MISSION 3: LOGIC CHECK (TRUE OR FALSE?)
+    ============================================================ -->
+    <section id="mission-3" class="mission-panel" aria-labelledby="m3-title">
+      <div class="mission-header">
+        <span class="mission-tag">Mission 03 // Logic Verification</span>
+        <h2 id="m3-title" class="mission-title">Exercise 3: Logic Check (True or False?)</h2>
+        <p class="mission-instruction">
+          Read each sentence carefully. Is the modal verb logical and correct? Click <strong>TRUE</strong> if it is right, or <strong>FALSE</strong> if the logic or grammar is wrong.
+        </p>
+      </div>
+
+      <div id="ex3-container" class="exercise-list"></div>
+
+      <div class="action-bar">
+        <button class="btn btn-primary" type="button" onclick="checkEx3()">Check Answers</button>
+        <button class="btn btn-secondary" type="button" onclick="resetEx3()">Reset</button>
+        <button class="btn btn-subtle" type="button" onclick="showAnswersEx3()">Show Answers</button>
+      </div>
+      <div id="ex3-banner" class="result-banner" role="status"></div>
+    </section>
+
+    <!-- ============================================================
+         MISSION 4: MINI-MYSTERY — "THE STOLEN USB DRIVE"
+    ============================================================ -->
+    <section id="mission-4" class="mission-panel" aria-labelledby="m4-title">
+      <div class="mission-header">
+        <span class="mission-tag">Mission 04 // Case File #409</span>
+        <h2 id="m4-title" class="mission-title">Exercise 4: Mini-Mystery — "The Stolen USB Drive"</h2>
+        <p class="mission-instruction">
+          A secret USB drive is missing from headquarters! Read the clues and the 3 suspect files, then type <strong>must, can't, might, could,</strong> or <strong>should</strong> to complete the Detective's Report.
+        </p>
+      </div>
+
+      <!-- Clues Box -->
+      <div class="clues-box">
+        <div class="clues-title">🔍 Crime Scene Evidence</div>
+        <ul class="clues-list">
+          <li><strong>Clue A:</strong> The thief entered the room at 14:00 using a secret 6-digit password.</li>
+          <li><strong>Clue B:</strong> The surveillance camera showed someone very tall wearing a disguise.</li>
+        </ul>
+      </div>
+
+      <!-- Suspect Dossiers -->
+      <div class="dossiers-grid">
+        <article class="dossier-card">
+          <div class="dossier-head">
+            <div class="dossier-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div>
+              <div class="dossier-name">Agent Leo</div>
+              <div class="dossier-role">SUSPECT #01</div>
+            </div>
+          </div>
+          <ul class="dossier-stats">
+            <li><strong>Height:</strong> 190 cm tall</li>
+            <li><strong>Access:</strong> Knows the password</li>
+            <li><strong>Alibi (14:00):</strong> Was in a meeting at 14:00 (verified alibi)</li>
+          </ul>
+        </article>
+
+        <article class="dossier-card">
+          <div class="dossier-head">
+            <div class="dossier-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div>
+              <div class="dossier-name">Agent Max</div>
+              <div class="dossier-role">SUSPECT #02</div>
+            </div>
+          </div>
+          <ul class="dossier-stats">
+            <li><strong>Height:</strong> 192 cm tall</li>
+            <li><strong>Access:</strong> Knows the password</li>
+            <li><strong>Alibi (14:00):</strong> Was "alone in the cafeteria" at 14:00</li>
+          </ul>
+        </article>
+
+        <article class="dossier-card">
+          <div class="dossier-head">
+            <div class="dossier-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div>
+              <div class="dossier-name">Agent Mia</div>
+              <div class="dossier-role">SUSPECT #03</div>
+            </div>
+          </div>
+          <ul class="dossier-stats">
+            <li><strong>Height:</strong> 160 cm tall</li>
+            <li><strong>Access:</strong> Knows the password</li>
+            <li><strong>Alibi (14:00):</strong> Has no alibi for 14:00</li>
+          </ul>
+        </article>
+      </div>
+
+      <!-- Detective's Report -->
+      <div class="report-box">
+        <span class="report-header">📄 Detective's Official Report</span>
+        <div id="ex4-report"></div>
+      </div>
+      <div id="ex4-feedback" class="gap-feedback-list"></div>
+
+      <div class="action-bar">
+        <button class="btn btn-primary" type="button" onclick="checkEx4()">Check Answers</button>
+        <button class="btn btn-secondary" type="button" onclick="resetEx4()">Reset</button>
+        <button class="btn btn-subtle" type="button" onclick="showAnswersEx4()">Show Answers</button>
+      </div>
+      <div id="ex4-banner" class="result-banner" role="status"></div>
+    </section>
+
+    <!-- ============================================================
+         MISSION 5: CODE RED — FIX THE AGENT'S REPORT
+    ============================================================ -->
+    <section id="mission-5" class="mission-panel" aria-labelledby="m5-title">
+      <div class="mission-header">
+        <span class="mission-tag">Mission 05 // Code Red Error Correction</span>
+        <h2 id="m5-title" class="mission-title">Exercise 5: Code Red — Fix the Agent's Report</h2>
+        <p class="mission-instruction">
+          Each sentence has ONE grammar mistake. Click on the wrong word to cross it out, then type the correct word in the box (leave the box empty if the word should simply be deleted).
+        </p>
+      </div>
+
+      <div id="ex5-container" class="exercise-list"></div>
+
+      <div class="action-bar">
+        <button class="btn btn-primary" type="button" onclick="checkEx5()">Check Answers</button>
+        <button class="btn btn-secondary" type="button" onclick="resetEx5()">Reset</button>
+        <button class="btn btn-subtle" type="button" onclick="showAnswersEx5()">Show Answers</button>
+      </div>
+      <div id="ex5-banner" class="result-banner" role="status"></div>
+    </section>
+
+    <footer class="app-footer">
+      AGENT DEDUCTION ACADEMY // MODAL VERBS TRAINING SYSTEM // END OF TRANSMISSION
+    </footer>
+  </div>
+
+  <script>
+    /* ============================================================
+       WEB AUDIO API SYNTHESIZED SOUND ENGINE
+       No external audio files required; handles browser autoplay rules
+    ============================================================ */
+    const SoundFX = (() => {
+      let ctx = null;
+      let enabled = true;
+
+      function getContext() {
+        if (!enabled) return null;
+        try {
+          if (!ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
+            ctx = new AudioCtx();
+          }
+          if (ctx.state === "suspended") {
+            ctx.resume();
+          }
+          return ctx;
+        } catch (err) {
+          return null;
+        }
+      }
+
+      // Crisp tactile click/blip for buttons, tabs, and words
+      function click() {
+        const c = getContext();
+        if (!c) return;
+        const now = c.currentTime;
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(680, now);
+        osc.frequency.exponentialRampToValueAtTime(340, now + 0.045);
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(now);
+        osc.stop(now + 0.055);
+      }
+
+      // Subtle radio static/beep when switching missions or dropdowns
+      function radioBlip() {
+        const c = getContext();
+        if (!c) return;
+        const now = c.currentTime;
+
+        // Short carrier beep
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(1120, now);
+        osc.frequency.setValueAtTime(880, now + 0.04);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(now);
+        osc.stop(now + 0.095);
+
+        // Tiny filtered white-noise burst for radio static feel
+        const bufferSize = Math.floor(c.sampleRate * 0.05);
+        const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * 0.25;
+        }
+        const noise = c.createBufferSource();
+        noise.buffer = buffer;
+        const filter = c.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.value = 2200;
+        const nGain = c.createGain();
+        nGain.gain.setValueAtTime(0.04, now);
+        nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        noise.connect(filter);
+        filter.connect(nGain);
+        nGain.connect(c.destination);
+        noise.start(now);
+      }
+
+      // Satisfying "Access Granted" chime
+      function success() {
+        const c = getContext();
+        if (!c) return;
+        const now = c.currentTime;
+        const notes = [523.25, 659.25, 783.99];
+        notes.forEach((freq, idx) => {
+          const osc = c.createOscillator();
+          const gain = c.createGain();
+          osc.type = "sine";
+          const start = now + idx * 0.07;
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.09, start + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.22);
+          osc.connect(gain);
+          gain.connect(c.destination);
+          osc.start(start);
+          osc.stop(start + 0.24);
+        });
+      }
+
+      // Low "Access Denied" buzz
+      function error() {
+        const c = getContext();
+        if (!c) return;
+        const now = c.currentTime;
+        [190, 145].forEach((freq, idx) => {
+          const osc = c.createOscillator();
+          const gain = c.createGain();
+          osc.type = "sawtooth";
+          const start = now + idx * 0.1;
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.06, start);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.14);
+          osc.connect(gain);
+          gain.connect(c.destination);
+          osc.start(start);
+          osc.stop(start + 0.15);
+        });
+      }
+
+      // 100% Mission Complete fanfare chime
+      function fanfare() {
+        const c = getContext();
+        if (!c) return;
+        const now = c.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, idx) => {
+          const osc = c.createOscillator();
+          const gain = c.createGain();
+          osc.type = "triangle";
+          const start = now + idx * 0.085;
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.11, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.36);
+          osc.connect(gain);
+          gain.connect(c.destination);
+          osc.start(start);
+          osc.stop(start + 0.38);
+        });
+      }
+
+      function toggle() {
+        enabled = !enabled;
+        if (enabled) click();
+        return enabled;
+      }
+
+      return { click, radioBlip, success, error, fanfare, toggle };
+    })();
+
+    /* ============================================================
+       TEXT NORMALIZATION & SCORING STATE
+    ============================================================ */
+    function normalizeAnswer(str) {
+      return (str || "")
+        .replace(/[\u2018\u2019\u201B`]/g, "'")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+    }
+
+    const missionScores = {
+      1: { score: 0, total: 7 },
+      2: { score: 0, total: 8 },
+      3: { score: 0, total: 6 },
+      4: { score: 0, total: 5 },
+      5: { score: 0, total: 7 }
+    };
+
+    function updateOverallProgress() {
+      let earned = 0;
+      let total = 0;
+      Object.keys(missionScores).forEach((key) => {
+        const m = missionScores[key];
+        earned += m.score;
+        total += m.total;
+        const badge = document.getElementById(`badge-${key}`);
+        if (badge) {
+          if (m.score === m.total) {
+            badge.textContent = `${m.score}/${m.total} ✓`;
+            badge.classList.add("complete");
+          } else {
+            badge.textContent = `${m.score}/${m.total}`;
+            badge.classList.remove("complete");
+          }
+        }
+      });
+
+      const pct = total > 0 ? Math.round((earned / total) * 100) : 0;
+      document.getElementById("overallScoreText").textContent = `${earned} / ${total} POINTS (${pct}%)`;
+      document.getElementById("overallProgressFill").style.width = `${pct}%`;
+      document.getElementById("overallProgressBar").setAttribute("aria-valuenow", String(earned));
+    }
+
+    function showBanner(bannerId, score, total) {
+      const banner = document.getElementById(bannerId);
+      banner.className = "result-banner show";
+      if (score === total) {
+        banner.classList.add("perfect");
+        banner.innerHTML = `<span>🏆 MISSION ACCOMPLISHED! Perfect score: ${score} / ${total}.</span><span>ACCESS GRANTED</span>`;
+        SoundFX.fanfare();
+      } else if (score >= Math.ceil(total * 0.6)) {
+        banner.classList.add("partial");
+        banner.innerHTML = `<span>⚡ Good work, Agent! You scored ${score} / ${total}. Review the red clues and try again.</span><span>IN PROGRESS</span>`;
+        SoundFX.success();
+      } else {
+        banner.classList.add("low");
+        banner.innerHTML = `<span>🚨 Access Denied! You scored ${score} / ${total}. Check the explanations below and retry.</span><span>RETRY NEEDED</span>`;
+        SoundFX.error();
+      }
+    }
+
+    /* ============================================================
+       HEADER CONTROLS & TAB NAVIGATION
+    ============================================================ */
+    document.getElementById("soundToggleBtn").addEventListener("click", () => {
+      const isOn = SoundFX.toggle();
+      const btn = document.getElementById("soundToggleBtn");
+      document.getElementById("soundIcon").textContent = isOn ? "🔊" : "🔇";
+      document.getElementById("soundLabel").textContent = isOn ? "SOUND: ON" : "SOUND: OFF";
+      btn.setAttribute("aria-pressed", String(isOn));
+      btn.classList.toggle("muted", !isOn);
+    });
+
+    document.querySelectorAll(".nav-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const missionId = tab.getAttribute("data-mission");
+        SoundFX.radioBlip();
+        document.querySelectorAll(".nav-tab").forEach((t) => t.classList.remove("active"));
+        document.querySelectorAll(".mission-panel").forEach((p) => p.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(`mission-${missionId}`).classList.add("active");
+      });
+    });
+
+    // Exercise 2 Grammar Briefing collapse toggle
+    document.getElementById("briefingToggle").addEventListener("click", () => {
+      SoundFX.click();
+      const body = document.getElementById("briefingBody");
+      const arrow = document.getElementById("briefingArrow");
+      const btn = document.getElementById("briefingToggle");
+      const isCollapsed = body.classList.toggle("collapsed");
+      arrow.textContent = isCollapsed ? "▼ Show" : "▲ Hide";
+      btn.setAttribute("aria-expanded", String(!isCollapsed));
+    });
+
+    /* ============================================================
+       EXERCISE 1: EVIDENCE & LOGIC (DEDUCTION BUILDER)
+    ============================================================ */
+    const ex1Data = [
+      {
+        before: "The alarm is quiet, and the laser grid is still turned on. The thief",
+        verb: "(be)",
+        after: "inside the vault.",
+        hint: "0% — impossible",
+        accepted: ["can't be", "cannot be"],
+        displayAnswer: "can't be",
+        explanation: "Use \"can't be\" because the quiet alarm and active lasers prove it is impossible."
+      },
+      {
+        before: "Look at the surveillance monitor: that man is wearing a fake mustache and holding a fake ID. He",
+        verb: "(work)",
+        after: "undercover!",
+        hint: "100% — sure",
+        accepted: ["must work", "must be working"],
+        displayAnswer: "must work / must be working",
+        explanation: "Use \"must work\" or \"must be working\" because the evidence makes us 100% sure."
+      },
+      {
+        before: "The hacker sent the classified data 5 minutes ago, and our internet is super fast. The file",
+        verb: "(arrive)",
+        after: "any second now.",
+        hint: "expectation — likely to happen",
+        accepted: ["should arrive"],
+        displayAnswer: "should arrive",
+        explanation: "Use \"should arrive\" when you expect something to happen normally or very soon."
+      },
+      {
+        before: "We found two different sets of fingerprints on the safe. The thief",
+        verb: "(have)",
+        after: "an accomplice.",
+        hint: "100% — sure",
+        accepted: ["must have"],
+        displayAnswer: "must have",
+        explanation: "Two sets of fingerprints are strong proof, so use \"must have\"."
+      },
+      {
+        before: "Agent Nova isn't answering her radio. I'm not sure, but she",
+        verb: "(hide)",
+        after: "from the guards right now.",
+        hint: "50% — possible",
+        accepted: ["might be hiding", "could be hiding", "might hide", "could hide"],
+        displayAnswer: "might / could be hiding",
+        explanation: "You are not sure (50% guess), so \"might / could be hiding\" (or \"might / could hide\") is correct."
+      },
+      {
+        before: "He showed us train tickets and photos from Berlin taken at 9:00 PM. That",
+        verb: "(be)",
+        after: "a strong alibi, or maybe it's fake!",
+        hint: "50% — possible",
+        accepted: ["might be", "could be"],
+        displayAnswer: "might be / could be",
+        explanation: "Because it might be real or fake (50% possibility), use \"might be\" or \"could be\"."
+      },
+      {
+        before: "The villain's main base is guarded by 50 soldiers and drones. It",
+        verb: "(be)",
+        after: "easy to infiltrate it alone!",
+        hint: "0% — impossible",
+        accepted: ["can't be", "cannot be"],
+        displayAnswer: "can't be",
+        explanation: "With 50 soldiers and drones, it is impossible to be easy — use \"can't be\"."
+      }
+    ];
+
+    function renderEx1() {
+      const container = document.getElementById("ex1-container");
+      container.innerHTML = ex1Data.map((item, idx) => `
+        <div class="item-card" id="ex1-card-${idx}">
+          <div>
+            <span class="item-num">${idx + 1}</span>
+            <span>${item.before}</span>
+            <input
+              type="text"
+              id="ex1-input-${idx}"
+              class="inline-input"
+              placeholder="modal + verb"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="Sentence ${idx + 1} answer"
+            />
+            <span class="verb-cue">${item.verb}</span>
+            <span>${item.after}</span>
+            <span class="hint-pill">${item.hint}</span>
+          </div>
+          <div class="item-feedback" id="ex1-fb-${idx}"></div>
+        </div>
+      `).join("");
+    }
+
+    function checkEx1() {
+      let score = 0;
+      ex1Data.forEach((item, idx) => {
+        const input = document.getElementById(`ex1-input-${idx}`);
+        const card = document.getElementById(`ex1-card-${idx}`);
+        const fb = document.getElementById(`ex1-fb-${idx}`);
+        const val = normalizeAnswer(input.value);
+        const isCorrect = item.accepted.includes(val);
+
+        card.classList.remove("is-correct", "is-wrong");
+        input.classList.remove("correct", "wrong");
+        fb.classList.remove("correct", "wrong");
+
+        if (isCorrect) {
+          score++;
+          card.classList.add("is-correct");
+          input.classList.add("correct");
+          fb.classList.add("correct", "show");
+          fb.innerHTML = `✅ <strong>Correct!</strong> ${item.explanation}`;
+        } else {
+          card.classList.add("is-wrong");
+          input.classList.add("wrong");
+          fb.classList.add("wrong", "show");
+          fb.innerHTML = `❌ <strong>Not quite.</strong> Accepted answer: <strong>${item.displayAnswer}</strong>. ${item.explanation}`;
+        }
+      });
+
+      missionScores[1].score = score;
+      updateOverallProgress();
+      showBanner("ex1-banner", score, ex1Data.length);
+    }
+
+    function resetEx1() {
+      SoundFX.click();
+      ex1Data.forEach((_, idx) => {
+        const input = document.getElementById(`ex1-input-${idx}`);
+        const card = document.getElementById(`ex1-card-${idx}`);
+        const fb = document.getElementById(`ex1-fb-${idx}`);
+        input.value = "";
+        input.classList.remove("correct", "wrong");
+        card.classList.remove("is-correct", "is-wrong");
+        fb.className = "item-feedback";
+        fb.innerHTML = "";
+      });
+      document.getElementById("ex1-banner").className = "result-banner";
+      missionScores[1].score = 0;
+      updateOverallProgress();
+    }
+
+    function showAnswersEx1() {
+      SoundFX.click();
+      ex1Data.forEach((item, idx) => {
+        const input = document.getElementById(`ex1-input-${idx}`);
+        const card = document.getElementById(`ex1-card-${idx}`);
+        const fb = document.getElementById(`ex1-fb-${idx}`);
+        input.value = item.accepted[0];
+        input.classList.remove("wrong");
+        input.classList.add("correct");
+        card.classList.remove("is-wrong");
+        card.classList.add("is-correct");
+        fb.className = "item-feedback correct show";
+        fb.innerHTML = `💡 <strong>Answer:</strong> ${item.displayAnswer} — ${item.explanation}`;
+      });
+    }
+
+    /* ============================================================
+       EXERCISE 2: LIVE RADIO TRANSMISSION (DIALOGUE GAP-FILL)
+    ============================================================ */
+    const ex2Gaps = [
+      { id: 1, accepted: ["must"], display: "must", explanation: "The lights are on — strong evidence (100% sure)." },
+      { id: 2, accepted: ["can't"], display: "can't", explanation: "Their shift ended an hour ago, so it is impossible." },
+      { id: 3, accepted: ["might", "could"], display: "might / could", explanation: "Fox is guessing who it is (50% possibility)." },
+      { id: 4, accepted: ["could", "might"], display: "could / might", explanation: "Another possible guess (50% possibility)." },
+      { id: 5, accepted: ["should"], display: "should", explanation: "Byte expects the hack to take about 10 seconds." },
+      { id: 6, accepted: ["must"], display: "must", explanation: "Combat boots with a doctor's coat = 100% sure it's a disguise!" },
+      { id: 7, accepted: ["might", "could"], display: "might / could", explanation: "It is possible she has a weapon or an accomplice." },
+      { id: 8, accepted: ["should"], display: "should", explanation: "Fox expects his gadget to disable the lasers in two minutes." }
+    ];
+
+    function makeSelectHtml(gapId) {
+      return `
+        <select id="ex2-gap-${gapId}" class="inline-select" aria-label="Radio gap ${gapId}" onchange="SoundFX.radioBlip()">
+          <option value="">Choose...</option>
+          <option value="must">must</option>
+          <option value="can't">can't</option>
+          <option value="might">might</option>
+          <option value="could">could</option>
+          <option value="should">should</option>
+        </select>
+      `;
+    }
+
+    function renderEx2() {
+      const container = document.getElementById("ex2-container");
+      const lines = [
+        {
+          speaker: "fox",
+          label: "AGENT FOX // FIELD UNIT",
+          avatar: "FOX",
+          html: `Byte, come in! I'm outside the lab, and the lights are on. Someone <strong>1)</strong> ${makeSelectHtml(1)} be inside right now!`
+        },
+        {
+          speaker: "byte",
+          label: "HACKER BYTE // HQ TERMINAL",
+          avatar: "BYTE",
+          html: `Wait a second, let me check the surveillance cameras... That's weird. The hallway is empty. It <strong>2)</strong> ${makeSelectHtml(2)} be a guard — their shift ended an hour ago.`
+        },
+        {
+          speaker: "fox",
+          label: "AGENT FOX // FIELD UNIT",
+          avatar: "FOX",
+          html: `Then who is it? It <strong>3)</strong> ${makeSelectHtml(3)} be a double agent trying to steal the classified files before us!`
+        },
+        {
+          speaker: "byte",
+          label: "HACKER BYTE // HQ TERMINAL",
+          avatar: "BYTE",
+          html: `Maybe. Or it <strong>4)</strong> ${makeSelectHtml(4)} just be the automatic cleaning robot. Let me hack the door lock. It <strong>5)</strong> ${makeSelectHtml(5)} take about 10 seconds to open... Done!`
+        },
+        {
+          speaker: "fox",
+          label: "AGENT FOX // FIELD UNIT",
+          avatar: "FOX",
+          html: `Great! Wait... I see a woman in a doctor's coat, but she's wearing combat boots! That <strong>6)</strong> ${makeSelectHtml(6)} be a disguise!`
+        },
+        {
+          speaker: "byte",
+          label: "HACKER BYTE // HQ TERMINAL",
+          avatar: "BYTE",
+          html: `Be careful, Fox! She <strong>7)</strong> ${makeSelectHtml(7)} have a weapon or an accomplice waiting in the next room.`
+        },
+        {
+          speaker: "fox",
+          label: "AGENT FOX // FIELD UNIT",
+          avatar: "FOX",
+          html: `Don't worry. With my gadget, I <strong>8)</strong> ${makeSelectHtml(8)} be able to disable the laser grid in two minutes.`
+        }
+      ];
+
+      container.innerHTML = lines.map((line) => `
+        <div class="radio-msg ${line.speaker}">
+          <div class="agent-avatar">${line.avatar}</div>
+          <div class="radio-content">
+            <span class="agent-name">${line.label}</span>
+            <div>${line.html}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function checkEx2() {
+      let score = 0;
+      const fbContainer = document.getElementById("ex2-feedback");
+      const fbItems = [];
+
+      ex2Gaps.forEach((gap) => {
+        const sel = document.getElementById(`ex2-gap-${gap.id}`);
+        const val = sel.value;
+        const isCorrect = gap.accepted.includes(val);
+        sel.classList.remove("correct", "wrong");
+
+        if (isCorrect) {
+          score++;
+          sel.classList.add("correct");
+          fbItems.push(`<div class="mini-fb correct">✅ <strong>Gap ${gap.id} (${val}):</strong> ${gap.explanation}</div>`);
+        } else {
+          sel.classList.add("wrong");
+          fbItems.push(`<div class="mini-fb wrong">❌ <strong>Gap ${gap.id}:</strong> Correct answer is <strong>${gap.display}</strong>. ${gap.explanation}</div>`);
+        }
+      });
+
+      fbContainer.innerHTML = fbItems.join("");
+      missionScores[2].score = score;
+      updateOverallProgress();
+      showBanner("ex2-banner", score, ex2Gaps.length);
+    }
+
+    function resetEx2() {
+      SoundFX.click();
+      ex2Gaps.forEach((gap) => {
+        const sel = document.getElementById(`ex2-gap-${gap.id}`);
+        sel.value = "";
+        sel.classList.remove("correct", "wrong");
+      });
+      document.getElementById("ex2-feedback").innerHTML = "";
+      document.getElementById("ex2-banner").className = "result-banner";
+      missionScores[2].score = 0;
+      updateOverallProgress();
+    }
+
+    function showAnswersEx2() {
+      SoundFX.click();
+      const fbItems = [];
+      ex2Gaps.forEach((gap) => {
+        const sel = document.getElementById(`ex2-gap-${gap.id}`);
+        sel.value = gap.accepted[0];
+        sel.classList.remove("wrong");
+        sel.classList.add("correct");
+        fbItems.push(`<div class="mini-fb correct">💡 <strong>Gap ${gap.id} (${gap.display}):</strong> ${gap.explanation}</div>`);
+      });
+      document.getElementById("ex2-feedback").innerHTML = fbItems.join("");
+    }
+
+    /* ============================================================
+       EXERCISE 3: LOGIC CHECK (TRUE OR FALSE?)
+    ============================================================ */
+    const ex3Data = [
+      {
+        sentence: "His fingerprints are on the stolen laptop, so he <strong>can't</strong> be the thief.",
+        answer: false,
+        explanation: "Fingerprints are 100% proof, so it should be \"must\"."
+      },
+      {
+        sentence: "She has never left the country, so she <strong>can't</strong> be the spy who stole the files in Paris.",
+        answer: true,
+        explanation: "Correct! It is impossible, so \"can't\" is right."
+      },
+      {
+        sentence: "I'm not sure where the double agent is; he <strong>must</strong> be hiding in the basement, or maybe on the roof.",
+        answer: false,
+        explanation: "You are not sure and have two options, so it should be \"might\" or \"could\"."
+      },
+      {
+        sentence: "The interrogation started 3 hours ago, and the suspect is sweating. He <strong>must</strong> be very nervous.",
+        answer: true,
+        explanation: "Correct! Strong evidence makes \"must\" right."
+      },
+      {
+        sentence: "We disabled the cameras and unlocked the back door. Our plan <strong>can't</strong> work smoothly tonight!",
+        answer: false,
+        explanation: "This is a positive expectation, so it should be \"should\"."
+      },
+      {
+        sentence: "That badge has a cartoon photo of a cat on it. It <strong>mustn't</strong> be a real ID!",
+        answer: false,
+        explanation: "For 0% impossibility in deduction, use \"can't\", not \"mustn't\"."
+      }
+    ];
+
+    const ex3Selections = new Array(ex3Data.length).fill(null);
+
+    function renderEx3() {
+      const container = document.getElementById("ex3-container");
+      container.innerHTML = ex3Data.map((item, idx) => `
+        <div class="item-card" id="ex3-card-${idx}">
+          <div class="tf-row">
+            <div class="tf-sentence">
+              <span class="item-num">${idx + 1}</span>
+              <span>${item.sentence}</span>
+            </div>
+            <div class="tf-controls">
+              <button type="button" class="tf-btn" id="ex3-true-${idx}" onclick="selectEx3(${idx}, true)">TRUE</button>
+              <button type="button" class="tf-btn" id="ex3-false-${idx}" onclick="selectEx3(${idx}, false)">FALSE</button>
+            </div>
+          </div>
+          <div class="item-feedback" id="ex3-fb-${idx}"></div>
+        </div>
+      `).join("");
+    }
+
+    function selectEx3(idx, value) {
+      SoundFX.click();
+      ex3Selections[idx] = value;
+      const tBtn = document.getElementById(`ex3-true-${idx}`);
+      const fBtn = document.getElementById(`ex3-false-${idx}`);
+      tBtn.classList.toggle("selected-true", value === true);
+      fBtn.classList.toggle("selected-false", value === false);
+    }
+
+    function checkEx3() {
+      let score = 0;
+      ex3Data.forEach((item, idx) => {
+        const card = document.getElementById(`ex3-card-${idx}`);
+        const fb = document.getElementById(`ex3-fb-${idx}`);
+        const userChoice = ex3Selections[idx];
+        const isCorrect = userChoice === item.answer;
+
+        card.classList.remove("is-correct", "is-wrong");
+        fb.classList.remove("correct", "wrong");
+
+        const correctLabel = item.answer ? "TRUE" : "FALSE";
+        if (isCorrect) {
+          score++;
+          card.classList.add("is-correct");
+          fb.classList.add("correct", "show");
+          fb.innerHTML = `✅ <strong>Correct (${correctLabel})!</strong> ${item.explanation}`;
+        } else {
+          card.classList.add("is-wrong");
+          fb.classList.add("wrong", "show");
+          const picked = userChoice === null ? "No answer selected" : (userChoice ? "TRUE" : "FALSE");
+          fb.innerHTML = `❌ <strong>Not quite</strong> (You chose: ${picked}). Correct answer: <strong>${correctLabel}</strong>. ${item.explanation}`;
+        }
+      });
+
+      missionScores[3].score = score;
+      updateOverallProgress();
+      showBanner("ex3-banner", score, ex3Data.length);
+    }
+
+    function resetEx3() {
+      SoundFX.click();
+      ex3Data.forEach((_, idx) => {
+        ex3Selections[idx] = null;
+        document.getElementById(`ex3-true-${idx}`).classList.remove("selected-true");
+        document.getElementById(`ex3-false-${idx}`).classList.remove("selected-false");
+        document.getElementById(`ex3-card-${idx}`).classList.remove("is-correct", "is-wrong");
+        const fb = document.getElementById(`ex3-fb-${idx}`);
+        fb.className = "item-feedback";
+        fb.innerHTML = "";
+      });
+      document.getElementById("ex3-banner").className = "result-banner";
+      missionScores[3].score = 0;
+      updateOverallProgress();
+    }
+
+    function showAnswersEx3() {
+      SoundFX.click();
+      ex3Data.forEach((item, idx) => {
+        ex3Selections[idx] = item.answer;
+        document.getElementById(`ex3-true-${idx}`).classList.toggle("selected-true", item.answer === true);
+        document.getElementById(`ex3-false-${idx}`).classList.toggle("selected-false", item.answer === false);
+        const card = document.getElementById(`ex3-card-${idx}`);
+        card.classList.remove("is-wrong");
+        card.classList.add("is-correct");
+        const fb = document.getElementById(`ex3-fb-${idx}`);
+        fb.className = "item-feedback correct show";
+        fb.innerHTML = `💡 <strong>Answer (${item.answer ? "TRUE" : "FALSE"}):</strong> ${item.explanation}`;
+      });
+    }
+
+    /* ============================================================
+       EXERCISE 4: MINI-MYSTERY — "THE STOLEN USB DRIVE"
+    ============================================================ */
+    const ex4Gaps = [
+      { id: 1, accepted: ["can't", "cannot"], display: "can't", explanation: "Agent Leo has a 100% verified alibi at 14:00, so it is impossible." },
+      { id: 2, accepted: ["can't", "cannot"], display: "can't", explanation: "The camera showed someone very tall, and Mia is 160 cm, so it is impossible." },
+      { id: 3, accepted: ["might", "could"], display: "might / could", explanation: "Mia has no alibi, so it is possible she helped as an accomplice." },
+      { id: 4, accepted: ["must"], display: "must", explanation: "Agent Max is tall, knows the password, and has no real alibi — 100% sure!" },
+      { id: 5, accepted: ["might", "could", "should"], display: "might / could / should", explanation: "It is possible (or expected) that the USB drive is still in his pocket." }
+    ];
+
+    function makeEx4Input(id) {
+      return `<input type="text" id="ex4-gap-${id}" class="inline-input short" placeholder="modal" autocomplete="off" spellcheck="false" aria-label="Report gap ${id}" />`;
+    }
+
+    function renderEx4() {
+      document.getElementById("ex4-report").innerHTML = `
+        "First, the thief <strong>1)</strong> ${makeEx4Input(1)} be Agent Leo, because 10 people saw him in a meeting at 14:00 — his alibi is 100% solid.
+        Next, it <strong>2)</strong> ${makeEx4Input(2)} be Agent Mia, because the camera recorded a very tall person, and Mia is only 160 cm!
+        However, Mia <strong>3)</strong> ${makeEx4Input(3)} be an accomplice who helped turn off the laser grid earlier.
+        That leaves only one person on the camera: the thief <strong>4)</strong> ${makeEx4Input(4)} be Agent Max!
+        We need to interrogate him immediately — the USB drive <strong>5)</strong> ${makeEx4Input(5)} still be in his pocket!"
+      `;
+    }
+
+    function checkEx4() {
+      let score = 0;
+      const fbItems = [];
+      ex4Gaps.forEach((gap) => {
+        const input = document.getElementById(`ex4-gap-${gap.id}`);
+        const val = normalizeAnswer(input.value);
+        const isCorrect = gap.accepted.includes(val);
+
+        input.classList.remove("correct", "wrong");
+        if (isCorrect) {
+          score++;
+          input.classList.add("correct");
+          fbItems.push(`<div class="mini-fb correct">✅ <strong>Gap ${gap.id} (${val}):</strong> ${gap.explanation}</div>`);
+        } else {
+          input.classList.add("wrong");
+          fbItems.push(`<div class="mini-fb wrong">❌ <strong>Gap ${gap.id}:</strong> Accepted: <strong>${gap.display}</strong>. ${gap.explanation}</div>`);
+        }
+      });
+
+      document.getElementById("ex4-feedback").innerHTML = fbItems.join("");
+      missionScores[4].score = score;
+      updateOverallProgress();
+      showBanner("ex4-banner", score, ex4Gaps.length);
+    }
+
+    function resetEx4() {
+      SoundFX.click();
+      ex4Gaps.forEach((gap) => {
+        const input = document.getElementById(`ex4-gap-${gap.id}`);
+        input.value = "";
+        input.classList.remove("correct", "wrong");
+      });
+      document.getElementById("ex4-feedback").innerHTML = "";
+      document.getElementById("ex4-banner").className = "result-banner";
+      missionScores[4].score = 0;
+      updateOverallProgress();
+    }
+
+    function showAnswersEx4() {
+      SoundFX.click();
+      const fbItems = [];
+      ex4Gaps.forEach((gap) => {
+        const input = document.getElementById(`ex4-gap-${gap.id}`);
+        input.value = gap.accepted[0];
+        input.classList.remove("wrong");
+        input.classList.add("correct");
+        fbItems.push(`<div class="mini-fb correct">💡 <strong>Gap ${gap.id} (${gap.display}):</strong> ${gap.explanation}</div>`);
+      });
+      document.getElementById("ex4-feedback").innerHTML = fbItems.join("");
+    }
+
+    /* ============================================================
+       EXERCISE 5: CODE RED — FIX THE AGENT'S REPORT
+       Click a word to cross it out + type correction (blank to delete)
+    ============================================================ */
+    const ex5Data = [
+      {
+        tokens: [
+          { w: "He" }, { w: "has" }, { w: "a" }, { w: "solid" }, { w: "alibi" },
+          { w: "from" }, { w: "the" }, { w: "airport", p: "," }, { w: "so" }, { w: "he" },
+          { w: "mustn't" }, { w: "be" }, { w: "the" }, { w: "thief", p: "." }
+        ],
+        wrongIndex: 10,
+        accepted: ["can't", "cannot"],
+        displayFix: "can't",
+        isDelete: false,
+        correctedSentence: "He has a solid alibi from the airport, so he can't be the thief.",
+        explanation: "Use \"can't\" (not \"mustn't\") for 0% impossibility in deduction."
+      },
+      {
+        tokens: [
+          { w: "Look" }, { w: "at" }, { w: "his" }, { w: "fake" }, { w: "ID" },
+          { pOnly: "—" }, { w: "he" }, { w: "must" }, { w: "to" }, { w: "work" },
+          { w: "undercover" }, { w: "for" }, { w: "the" }, { w: "enemy", p: "!" }
+        ],
+        wrongIndex: 8,
+        accepted: ["", "-", "none", "delete"],
+        displayFix: "(delete \"to\")",
+        isDelete: true,
+        correctedSentence: "Look at his fake ID — he must work undercover for the enemy!",
+        explanation: "Never use \"to\" after modal verbs (\"must work\")."
+      },
+      {
+        tokens: [
+          { w: "I'm" }, { w: "not" }, { w: "sure" }, { w: "who" }, { w: "disabled" },
+          { w: "the" }, { w: "laser" }, { w: "grid", p: "," }, { w: "but" }, { w: "it" },
+          { w: "might" }, { w: "is" }, { w: "a" }, { w: "double" }, { w: "agent", p: "." }
+        ],
+        wrongIndex: 11,
+        accepted: ["be"],
+        displayFix: "be",
+        isDelete: false,
+        correctedSentence: "I'm not sure who disabled the laser grid, but it might be a double agent.",
+        explanation: "Use the base form \"be\" after a modal verb (\"might be\")."
+      },
+      {
+        tokens: [
+          { w: "The" }, { w: "hacker" }, { w: "shoulds" }, { w: "unlock" }, { w: "the" },
+          { w: "classified" }, { w: "files" }, { w: "in" }, { w: "a" }, { w: "few" },
+          { w: "seconds", p: "." }
+        ],
+        wrongIndex: 2,
+        accepted: ["should"],
+        displayFix: "should",
+        isDelete: false,
+        correctedSentence: "The hacker should unlock the classified files in a few seconds.",
+        explanation: "Modal verbs never take \"-s\" (\"should unlock\")."
+      },
+      {
+        tokens: [
+          { w: "She" }, { w: "doesn't" }, { w: "know" }, { w: "the" }, { w: "secret" },
+          { w: "code", p: "," }, { w: "so" }, { w: "she" }, { w: "can't" }, { w: "to" },
+          { w: "infiltrate" }, { w: "the" }, { w: "vault" }, { w: "alone", p: "." }
+        ],
+        wrongIndex: 9,
+        accepted: ["", "-", "none", "delete"],
+        displayFix: "(delete \"to\")",
+        isDelete: true,
+        correctedSentence: "She doesn't know the secret code, so she can't infiltrate the vault alone.",
+        explanation: "Never use \"to\" after \"can't\" (\"can't infiltrate\")."
+      },
+      {
+        tokens: [
+          { w: "We" }, { w: "found" }, { w: "two" }, { w: "sets" }, { w: "of" },
+          { w: "fingerprints" }, { pOnly: "—" }, { w: "the" }, { w: "spy" }, { w: "must" },
+          { w: "has" }, { w: "an" }, { w: "accomplice", p: "." }
+        ],
+        wrongIndex: 10,
+        accepted: ["have"],
+        displayFix: "have",
+        isDelete: false,
+        correctedSentence: "We found two sets of fingerprints — the spy must have an accomplice.",
+        explanation: "Use the base form \"have\" after \"must\" (\"must have\")."
+      },
+      {
+        tokens: [
+          { w: "Check" }, { w: "the" }, { w: "surveillance" }, { w: "cameras", p: "!" },
+          { w: "That" }, { w: "strange" }, { w: "waiter" }, { w: "can" }, { w: "be" },
+          { w: "wearing" }, { w: "a" }, { w: "disguise", p: "." }
+        ],
+        hint: "50% possibility",
+        wrongIndex: 7,
+        accepted: ["might", "could", "may"],
+        displayFix: "might / could / may",
+        isDelete: false,
+        correctedSentence: "Check the surveillance cameras! That strange waiter might / could / may be wearing a disguise.",
+        explanation: "For a 50% guess, use \"might\", \"could\", or \"may\" (not \"can\")."
+      }
+    ];
+
+    const ex5SelectedWord = new Array(ex5Data.length).fill(null);
+
+    function renderEx5() {
+      const container = document.getElementById("ex5-container");
+      container.innerHTML = ex5Data.map((item, sIdx) => {
+        const wordsHtml = item.tokens.map((tok, tIdx) => {
+          if (tok.pOnly) {
+            return `<span class="punct-token">${tok.pOnly}</span>`;
+          }
+          const trailing = tok.p ? `<span class="punct-token">${tok.p}</span>` : "";
+          return `<button type="button" class="word-pill" id="ex5-w-${sIdx}-${tIdx}" onclick="toggleEx5Word(${sIdx}, ${tIdx})">${tok.w}</button>${trailing}`;
+        }).join("");
+
+        const hintBadge = item.hint ? `<span class="hint-pill">${item.hint}</span>` : "";
+
+        return `
+          <div class="item-card" id="ex5-card-${sIdx}">
+            <div style="display:flex; align-items:flex-start;">
+              <span class="item-num" style="margin-top:6px;">${sIdx + 1}</span>
+              <div style="flex:1;">
+                <div class="word-sentence">
+                  ${wordsHtml}
+                  ${hintBadge}
+                </div>
+                <div class="correction-drawer" id="ex5-drawer-${sIdx}">
+                  <span class="correction-label">
+                    Crossed out: <span class="crossed-preview" id="ex5-crossed-${sIdx}"></span>
+                    &nbsp;→ Correction (leave blank to delete word):
+                  </span>
+                  <input
+                    type="text"
+                    id="ex5-input-${sIdx}"
+                    class="inline-input short"
+                    placeholder="type fix or leave blank"
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-label="Correction for sentence ${sIdx + 1}"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="item-feedback" id="ex5-fb-${sIdx}"></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function toggleEx5Word(sIdx, tIdx) {
+      SoundFX.click();
+      const prevIdx = ex5SelectedWord[sIdx];
+
+      // Clear previous crossed-out style
+      if (prevIdx !== null) {
+        const prevBtn = document.getElementById(`ex5-w-${sIdx}-${prevIdx}`);
+        if (prevBtn) prevBtn.classList.remove("crossed-out");
+      }
+
+      const drawer = document.getElementById(`ex5-drawer-${sIdx}`);
+      const preview = document.getElementById(`ex5-crossed-${sIdx}`);
+      const input = document.getElementById(`ex5-input-${sIdx}`);
+
+      // Clicking the same word un-selects it
+      if (prevIdx === tIdx) {
+        ex5SelectedWord[sIdx] = null;
+        drawer.classList.remove("show");
+        return;
+      }
+
+      // Cross out the newly clicked word
+      ex5SelectedWord[sIdx] = tIdx;
+      const newBtn = document.getElementById(`ex5-w-${sIdx}-${tIdx}`);
+      if (newBtn) newBtn.classList.add("crossed-out");
+      preview.textContent = ex5Data[sIdx].tokens[tIdx].w;
+      drawer.classList.add("show");
+      input.focus();
+    }
+
+    function checkEx5() {
+      let score = 0;
+
+      ex5Data.forEach((item, sIdx) => {
+        const card = document.getElementById(`ex5-card-${sIdx}`);
+        const fb = document.getElementById(`ex5-fb-${sIdx}`);
+        const input = document.getElementById(`ex5-input-${sIdx}`);
+        const selectedIdx = ex5SelectedWord[sIdx];
+        const typedVal = normalizeAnswer(input.value);
+
+        const wordRight = selectedIdx === item.wrongIndex;
+        const fixRight = item.accepted.includes(typedVal);
+        const isCorrect = wordRight && fixRight;
+
+        card.classList.remove("is-correct", "is-wrong");
+        input.classList.remove("correct", "wrong");
+        fb.classList.remove("correct", "wrong");
+
+        const targetWord = item.tokens[item.wrongIndex].w;
+
+        if (isCorrect) {
+          score++;
+          card.classList.add("is-correct");
+          input.classList.add("correct");
+          fb.classList.add("correct", "show");
+          fb.innerHTML = `
+            ✅ <strong>Correct!</strong> ${item.explanation}
+            <div class="corrected-full">✔ ${item.correctedSentence}</div>
+          `;
+        } else {
+          card.classList.add("is-wrong");
+          input.classList.add("wrong");
+          fb.classList.add("wrong", "show");
+
+          let statusMsg = "";
+          if (selectedIdx === null) {
+            statusMsg = `Click on the wrong word ("<strong>${targetWord}</strong>") first.`;
+          } else if (!wordRight) {
+            statusMsg = `You crossed out "<strong>${item.tokens[selectedIdx].w}</strong>", but the wrong word is "<strong>${targetWord}</strong>".`;
+          } else {
+            statusMsg = `You found the wrong word ("<strong>${targetWord}</strong>"), but the correction should be: <strong>${item.displayFix}</strong>.`;
+          }
+
+          fb.innerHTML = `
+            ❌ <strong>Not quite.</strong> ${statusMsg} ${item.explanation}
+            <div class="corrected-full">✔ ${item.correctedSentence}</div>
+          `;
+        }
+      });
+
+      missionScores[5].score = score;
+      updateOverallProgress();
+      showBanner("ex5-banner", score, ex5Data.length);
+    }
+
+    function resetEx5() {
+      SoundFX.click();
+      ex5Data.forEach((item, sIdx) => {
+        if (ex5SelectedWord[sIdx] !== null) {
+          const btn = document.getElementById(`ex5-w-${sIdx}-${ex5SelectedWord[sIdx]}`);
+          if (btn) btn.classList.remove("crossed-out");
+        }
+        ex5SelectedWord[sIdx] = null;
+        document.getElementById(`ex5-drawer-${sIdx}`).classList.remove("show");
+        const input = document.getElementById(`ex5-input-${sIdx}`);
+        input.value = "";
+        input.classList.remove("correct", "wrong");
+        document.getElementById(`ex5-card-${sIdx}`).classList.remove("is-correct", "is-wrong");
+        const fb = document.getElementById(`ex5-fb-${sIdx}`);
+        fb.className = "item-feedback";
+        fb.innerHTML = "";
+      });
+      document.getElementById("ex5-banner").className = "result-banner";
+      missionScores[5].score = 0;
+      updateOverallProgress();
+    }
+
+    function showAnswersEx5() {
+      SoundFX.click();
+      ex5Data.forEach((item, sIdx) => {
+        // Clear any existing selection
+        if (ex5SelectedWord[sIdx] !== null) {
+          const prevBtn = document.getElementById(`ex5-w-${sIdx}-${ex5SelectedWord[sIdx]}`);
+          if (prevBtn) prevBtn.classList.remove("crossed-out");
+        }
+        // Highlight correct wrong word
+        ex5SelectedWord[sIdx] = item.wrongIndex;
+        const targetBtn = document.getElementById(`ex5-w-${sIdx}-${item.wrongIndex}`);
+        if (targetBtn) targetBtn.classList.add("crossed-out");
+
+        const drawer = document.getElementById(`ex5-drawer-${sIdx}`);
+        const preview = document.getElementById(`ex5-crossed-${sIdx}`);
+        const input = document.getElementById(`ex5-input-${sIdx}`);
+
+        preview.textContent = item.tokens[item.wrongIndex].w;
+        drawer.classList.add("show");
+        input.value = item.isDelete ? "" : item.accepted[0];
+        input.classList.remove("wrong");
+        input.classList.add("correct");
+
+        const card = document.getElementById(`ex5-card-${sIdx}`);
+        card.classList.remove("is-wrong");
+        card.classList.add("is-correct");
+
+        const fb = document.getElementById(`ex5-fb-${sIdx}`);
+        fb.className = "item-feedback correct show";
+        fb.innerHTML = `
+          💡 <strong>Fix:</strong> Cross out "<strong>${item.tokens[item.wrongIndex].w}</strong>" → <strong>${item.displayFix}</strong>. ${item.explanation}
+          <div class="corrected-full">✔ ${item.correctedSentence}</div>
+        `;
+      });
+    }
+
+    /* ============================================================
+       INITIALIZE APPLICATION
+    ============================================================ */
+    function initApp() {
+      renderEx1();
+      renderEx2();
+      renderEx3();
+      renderEx4();
+      renderEx5();
+      updateOverallProgress();
+    }
+
+    window.addEventListener("DOMContentLoaded", initApp);
+  </script>
+</body>
+</html>
